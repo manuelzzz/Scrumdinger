@@ -32,6 +32,10 @@ enum Theme: String {
 		}
 	}
 
+	var name: String {
+		rawValue.capitalized
+	}
+	
 	var mainColor: Color {
 		Color(rawValue)
 	}
