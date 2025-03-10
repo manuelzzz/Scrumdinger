@@ -1,5 +1,5 @@
 //
-//  ScrumViews.swift
+//  ScrumsView.swift
 //  Scrumdinger
 //
 //  Created by Manuel Santos Souza on 09/03/25.
