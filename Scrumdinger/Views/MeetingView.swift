@@ -8,40 +8,36 @@
 import SwiftUI
 
 struct MeetingView: View {
+	@Binding var scrum: DailyScrum
+	@StateObject var scrumTimer = ScrumTimer()
+
 	var body: some View {
-		VStack {
-			ProgressView(value: 5, total: 15)
-			HStack {
-				VStack(alignment: .leading) {
-					Text("Seconds Elapsed")
-						.font(.caption)
-					Label("300", systemImage: "hourglass.tophalf.fill")
-				}
-				Spacer()
-				VStack(alignment: .trailing) {
-					Text("Seconds Remaining")
-						.font(.caption)
-					Label("600", systemImage: "hourglass.bottomhalf.fill")
-				}
+		ZStack {
+			RoundedRectangle(cornerRadius: 16)
+				.fill(scrum.theme.mainColor)
+			VStack {
+				MeetingHeaderView(
+					secondsElapsed: scrumTimer.secondsElapsed,
+					secondsRemaining: scrumTimer.secondsRemaining,
+					theme: scrum.theme)
+				Circle()
+					.strokeBorder(lineWidth: 24)
+				MeetingFooterView(speakers: scrumTimer.speakers, skipAction: scrumTimer.skipSpeaker)
 			}
-			.accessibilityElement(children: .ignore)
-			.accessibilityLabel("Time remaining")
-			.accessibilityValue("10 minutes")
-			Circle()
-				.strokeBorder(lineWidth: 24)
-			HStack {
-				Text("Speaker 1 of 3")
-				Spacer()
-				Button(action: {}) {
-					Image(systemName: "forward.fill")
-				}
-				.accessibilityLabel("Next speaker")
+			.padding()
+			.foregroundColor(scrum.theme.accentColor)
+			.onAppear {
+				scrumTimer.reset(lengthInMinutes: scrum.lengthInMinutes, attendees: scrum.attendees)
+				scrumTimer.startScrum()
 			}
+			.onDisappear {
+				scrumTimer.stopScrum()
+			}
+			.navigationBarTitleDisplayMode(.inline)
 		}
-		.padding()
 	}
 }
 
 #Preview {
-	MeetingView()
+	MeetingView(scrum: .constant(DailyScrum.sampleData[0]))
 }
