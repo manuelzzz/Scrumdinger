@@ -9,8 +9,10 @@ import AVFoundation
 import SwiftUI
 
 struct MeetingView: View {
+	@State private var isRecording = false
 	@Binding var scrum: DailyScrum
 	@StateObject var scrumTimer = ScrumTimer()
+	@StateObject var speechRecognizer = SpeechRecognizer()
 
 	private var player: AVPlayer { return AVPlayer.sharedDingPlayer }
 
@@ -48,11 +50,16 @@ struct MeetingView: View {
 			player.seek(to: .zero)
 			player.play()
 		}
+		speechRecognizer.resetTranscript()
+		speechRecognizer.startTranscribing()
+		isRecording = true
 		scrumTimer.startScrum()
 	}
 
 	private func endScrum() {
 		scrumTimer.stopScrum()
+		speechRecognizer.stopTranscribing()
+		isRecording = false
 		let newHistory = History(attendees: scrum.attendees)
 		scrum.history.insert(newHistory, at: 0)
 	}
